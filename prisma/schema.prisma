@@ -13,81 +13,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Define the models
-
-model Student {
-  student_id                 Int       @id @default(autoincrement())
-  name                       String
-  email                      String
-  phone_number               String?
-  current_courses            String?
-  preferred_communication_method CommunicationMethod
-  referrals                  ReferralDetails[]
-}
-
-model Referrer {
-  referrer_id                Int       @id @default(autoincrement())
-  name                       String
-  email                      String
-  phone_number               String?
-  relation_to_referred_student String?
-  current_courses            String?
-  referrals                  ReferralDetails[]
-}
-
-model ReferredStudent {
-  referred_student_id       Int       @id @default(autoincrement())
-  name                      String
-  email                     String
-  phone_number              String?
-  preferred_communication_method CommunicationMethod
-  interested_courses        String?
-  referrals                 ReferralDetails[]
-}
-
 model Course {
-  course_id                 Int       @id @default(autoincrement())
-  course_name               String
-  course_duration          String?
-  course_fee                Float?
-  referrals                 ReferralDetails[]
+  id             Int    @id @default(autoincrement())
+  name           String
+  referrer_bonus Int
+  referee_bonus  Int
+  referrals      Referral[]
+
+  @@map("courses")
 }
 
-model ReferralDetails {
-  referral_id                Int       @id @default(autoincrement())
-  student_id                 Int
-  referrer_id                Int
-  referred_student_id       Int
-  course_id                  Int
-  preferred_start_date       DateTime?
-  previous_experience        Experience
-  specific_experience        String?
-  preferred_language        String?
-  specific_requirements_or_goals String?
-  consent                   Consent
-  referrer_signature         String?
-  referral_date             DateTime?
-  referral_received_by      String?
-  follow_up_action_taken     String?
-  comments                   String?
-
-  student                   Student   @relation(fields: [student_id], references: [student_id])
-  referrer                   Referrer  @relation(fields: [referrer_id], references: [referrer_id])
-  referred_student          ReferredStudent @relation(fields: [referred_student_id], references: [referred_student_id])
-  course                    Course    @relation(fields: [course_id], references: [course_id])
-}
-
-enum CommunicationMethod {
-  Email
-  Phone
-}
-
-enum Experience {
-  Yes
-  No
-}
-
-enum Consent {
-  Yes
-  No
+model Referral {
+  id               Int    @id @default(autoincrement())
+  referrer_name    String
+  referrer_email   String @unique
+  referrer_phone   String
+  referee_name     String
+  referee_email    String @unique
+  referee_phone    String
+  course_id        Int
+  referral_code    String @unique
+  date_of_referral DateTime @default(now())
+  consent          Boolean @default(false)
+  
+  course Course @relation(fields: [course_id], references: [id])
 }
