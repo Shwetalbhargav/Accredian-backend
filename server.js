@@ -10,7 +10,11 @@ const prisma = require('./config/db');
 
 dotenv.config();
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "https://accredian-frontend-wheat.vercel.app", 
+  methods: "GET,POST,PUT,DELETE",
+  credentials: true
+}));
 app.use(bodyParser.json());
 
 // Confirm Database Connectivity
